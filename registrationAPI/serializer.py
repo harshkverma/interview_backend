@@ -24,7 +24,7 @@ class UserSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        # Create a user instance without setting a default password
+        validated_data.pop('password2')
         user = User(
             email=validated_data['email'],
             first_name=validated_data['first_name'],
