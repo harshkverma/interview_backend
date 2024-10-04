@@ -1,8 +1,41 @@
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 from .models import User
 
-class UserSerializer(serializers.ModelSerializer):
+class LoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField(
+        style={'input_type': 'password'},
+        trim_whitespace=False
+    )
+
+    def validate(self, data):
+        email = data.get('email')
+        password = data.get('password')
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            print(f"Email '{email}' does not exist in the database.")
+            raise serializers.ValidationError({
+                "error": "Invalid email or password. Please try again."
+            })
+
+        if not user.check_password(password):
+            print(f"Password mismatch for user '{email}'.")
+            raise serializers.ValidationError({
+                "error": "Invalid email or password. Please try again."
+            })
+
+        print(f"Login successful for user '{email}'.")
+        data['user'] = user
+        return data
+
+
+
+class RegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     password2 = serializers.CharField(write_only=True, required=True)
 

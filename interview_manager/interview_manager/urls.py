@@ -22,5 +22,5 @@ from django.urls import path, include
 # ]
 
 urlpatterns = [
-    path('', include('users.urls')),  # Include the URLs from the users app
+    path('', include('apis.urls')),
 ]
