@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import LoginSerializer, RegistrationSerializer
 from .models import User
+from django.utils import timezone
 
 # Create your views here.
 
@@ -13,6 +14,8 @@ class LoginUserView(APIView):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.validated_data['user']
+            user.last_login = timezone.now()
+            user.save(update_fields=['last_login'])
             refresh = RefreshToken.for_user(user)
             return Response({
                 'message': 'Login successful!',
