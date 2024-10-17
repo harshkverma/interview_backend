@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 from .models import User
+from .models import User, Interview, Interviewee
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -69,3 +70,25 @@ class RegistrationSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+
+class IntervieweeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Interviewee
+        fields = ['first_name', 'last_name']
+
+class InterviewSerializer(serializers.ModelSerializer):
+    interviewee = IntervieweeSerializer()
+
+    class Meta:
+        model = Interview
+        fields = [
+            'interview_id', 'interviewee', 'date', 'time', 'duration',
+            'role', 'interviewer_name', 'job_title', 'business_area', 
+            'department', 'message'
+        ]
+
+    def create(self, validated_data):
+        interviewee_data = validated_data.pop('interviewee')
+        interviewee = Interviewee.objects.get_or_create(**interviewee_data)[0]
+        interview = Interview.objects.create(interviewee=interviewee, **validated_data)
+        return interview
