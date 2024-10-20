@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 from .models import User
-from .models import User, Interview, Interviewee
+from .models import User, Interview, Interviewee, Roles
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -45,11 +45,8 @@ class RegistrationSerializer(serializers.ModelSerializer):
         fields = ('email', 'first_name', 'last_name', 'password', 'password2', 'department', 'role')
 
     def validate(self, attrs):
-        # Check if both passwords match
-        if attrs['password'] != attrs['password2']:
-            raise serializers.ValidationError({"password": "Password fields didn't match."})
-
-         # Optionally, validate department and role if needed
+        
+         # validate department and role if needed
         if 'department' not in attrs:
             raise serializers.ValidationError({"department": "This field is required."})
         if 'role' not in attrs:
@@ -92,3 +89,8 @@ class InterviewSerializer(serializers.ModelSerializer):
         interviewee = Interviewee.objects.get_or_create(**interviewee_data)[0]
         interview = Interview.objects.create(interviewee=interviewee, **validated_data)
         return interview
+    
+class RoleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Roles
+        fields = ['id', 'job_title']

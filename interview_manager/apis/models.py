@@ -65,3 +65,9 @@ class Interview(models.Model):
 
     def __str__(self):
         return f"{self.interviewee} - {self.interview_id}"
+
+class Roles(models.Model):
+    job_title = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.job_title

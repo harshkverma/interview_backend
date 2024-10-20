@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import LoginUserView, RegisterUserView, ScheduleInterviewAPI, AllInterviewsAPI, InterviewsByDateAPI, InterviewsByWeekAPI, InterviewsByWorkWeekAPI, InterviewsByMonthAPI
+from .views import LoginUserView, RegisterUserView, ScheduleInterviewAPI, AllInterviewsAPI, InterviewsByDateAPI, InterviewsByWeekAPI, InterviewsByWorkWeekAPI, InterviewsByMonthAPI, GetRolesView
 
 urlpatterns = [
     path('api/login/', LoginUserView.as_view(), name='login'),
@@ -10,4 +10,5 @@ urlpatterns = [
     path('api/interview/week/', InterviewsByWeekAPI.as_view(), name='interviews-by-week'),
     path('api/interview/work-week/', InterviewsByWorkWeekAPI.as_view(), name='interviews-by-work-week'),
     path('api/interview/month/', InterviewsByMonthAPI.as_view(), name='interviews-by-month'),
+    path('api/roles/', GetRolesView.as_view(), name='get-roles'),
 ]

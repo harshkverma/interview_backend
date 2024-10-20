@@ -3,8 +3,8 @@ from rest_framework.response import Response
 from rest_framework import status, generics
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import LoginSerializer, RegistrationSerializer, InterviewSerializer
-from .models import User, Interview
+from .serializers import LoginSerializer, RegistrationSerializer, InterviewSerializer, RoleSerializer
+from .models import User, Interview, Roles
 from django.utils import timezone
 
 class LoginUserView(APIView):
@@ -83,3 +83,17 @@ class InterviewsByMonthAPI(generics.ListAPIView):
         month = self.request.query_params.get('month')
         year = self.request.query_params.get('year')
         return Interview.objects.filter(date__month=month, date__year=year)
+    
+class GetRolesView(generics.ListAPIView):
+    serializer_class = RoleSerializer
+
+    def get_queryset(self):
+        return Roles.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response({
+            "roles": serializer.data,
+            "message": "Roles retrieved successfully"
+        }, status=status.HTTP_200_OK)
