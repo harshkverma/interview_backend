@@ -57,11 +57,11 @@ class Interview(models.Model):
     time = models.TimeField()
     duration = models.DurationField()
     role = models.CharField(max_length=50, choices=Role_Choice)
-    interviewer_name = models.CharField(max_length=100)
+    interviewer_name = models.CharField(max_length=100, blank=True, null=True)
     job_title = models.CharField(max_length=100)
     business_area = models.CharField(max_length=100)
     department = models.CharField(max_length=50, choices=Department_Choice)
-    message = models.TextField()
+    message = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.interviewee} - {self.interview_id}"
