@@ -1,6 +1,5 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
-import uuid
 
 # Choices for department and role
 Department_Choice = (
@@ -43,28 +42,23 @@ class User(AbstractBaseUser):
     def __str__(self):
         return self.email
 
-class Interviewee(models.Model):
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
 
-    def __str__(self):
-        return f"{self.first_name} {self.last_name}"
 
 class Interview(models.Model):
-    interviewee = models.ForeignKey(Interviewee, on_delete=models.CASCADE)
-    interview_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    interviewee = models.CharField(max_length=100)
+    id = models.AutoField(primary_key=True)
     date = models.DateField()
     time = models.TimeField()
     duration = models.DurationField()
     role = models.CharField(max_length=50, choices=Role_Choice)
-    interviewer_name = models.CharField(max_length=100, blank=True, null=True)
+    interviewer = models.CharField(max_length=100, blank=True, null=True)
     job_title = models.CharField(max_length=100)
     business_area = models.CharField(max_length=100)
     department = models.CharField(max_length=50, choices=Department_Choice)
-    message = models.TextField(blank=True, null=True)
+    additional_notes = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"{self.interviewee} - {self.interview_id}"
+        return f"{self.interviewee} - {self.id}"
 
 class Roles(models.Model):
     job_title = models.CharField(max_length=50)
