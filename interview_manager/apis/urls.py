@@ -1,7 +1,9 @@
 from django.urls import path
+from django.contrib import admin
 from .views import LoginUserView, RegisterUserView, ScheduleInterviewAPI, AllInterviewsAPI, InterviewsByDateAPI, InterviewsByWeekAPI, InterviewsByWorkWeekAPI, InterviewsByMonthAPI, GetRolesView
 
 urlpatterns = [
+    path('admin/', admin.site.urls),
     path('api/login/', LoginUserView.as_view(), name='login'),
     path('api/register/', RegisterUserView.as_view(), name='register'),
     path('api/interview/schedule/', ScheduleInterviewAPI.as_view(), name='schedule-interview'),
