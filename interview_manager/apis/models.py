@@ -9,14 +9,6 @@ Department_Choice = (
     ("Finance", "Finance")
 )
 
-Role_Choice = (
-    ("Manager", "Manager"),
-    ("Senior", "Senior"),
-    ("Junior", "Junior"),
-    ("Team Lead", "Team Lead"),
-    ("Intern", "Intern")
-)
-
 class UserManager(BaseUserManager):
     def create_user(self, email, password, department, role, **extra_fields):
         if not email:
@@ -32,7 +24,7 @@ class User(AbstractBaseUser):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
     department = models.CharField(max_length=20, choices=Department_Choice)
-    role = models.CharField(max_length=10, choices=Role_Choice)
+    role = models.CharField(max_length=50)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name']
@@ -46,11 +38,12 @@ class User(AbstractBaseUser):
 
 class Interview(models.Model):
     interviewee = models.CharField(max_length=100)
+    contact = models.CharField(max_length=15, blank=True)
     id = models.AutoField(primary_key=True)
     date = models.DateField()
     time = models.TimeField()
     duration = models.DurationField()
-    role = models.CharField(max_length=50, choices=Role_Choice)
+    role = models.CharField(max_length=50)
     interviewer = models.CharField(max_length=100, blank=True, null=True)
     job_title = models.CharField(max_length=100)
     business_area = models.CharField(max_length=100)
