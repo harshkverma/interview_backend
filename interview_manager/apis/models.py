@@ -38,7 +38,7 @@ class User(AbstractBaseUser):
 
 class Interview(models.Model):
     interviewee = models.CharField(max_length=100)
-    # contact = models.CharField(max_length=15, blank=True)
+    contact = models.CharField(max_length=15, blank=True)
     email = models.CharField(max_length=30, blank=True)
     phone = models.CharField(max_length=15, blank=True)
     id = models.AutoField(primary_key=True)

@@ -6,6 +6,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import LoginSerializer, RegistrationSerializer, InterviewSerializer, RoleSerializer
 from .models import User, Interview, Roles
 from django.utils import timezone
+import datetime
 
 class LoginUserView(APIView):
     def post(self, request, *args, **kwargs):
@@ -64,25 +65,43 @@ class InterviewsByWeekAPI(generics.ListAPIView):
     serializer_class = InterviewSerializer
 
     def get_queryset(self):
-        start_date = self.request.query_params.get('start_date')
-        end_date = self.request.query_params.get('end_date')
-        return Interview.objects.filter(date__range=[start_date, end_date])
+        today = timezone.now().date()
+        start_of_week = today - datetime.timedelta(days=today.weekday())
+        end_of_week = start_of_week + datetime.timedelta(days=6)  # Sunday
+
+        return Interview.objects.filter(
+            date__gte=start_of_week,
+            date__lte=end_of_week
+        )
 
 class InterviewsByWorkWeekAPI(generics.ListAPIView):
     serializer_class = InterviewSerializer
 
     def get_queryset(self):
-        start_date = self.request.query_params.get('start_date')
-        end_date = self.request.query_params.get('end_date')
-        return Interview.objects.filter(date__range=[start_date, end_date]).exclude(date__week_day__in=[7, 1])
+        today = timezone.now().date()
+        start_of_week = today - datetime.timedelta(days=today.weekday())
+        end_of_week = start_of_week + datetime.timedelta(days=4)  # Friday
+
+        return Interview.objects.filter(
+            date__gte=start_of_week,
+            date__lte=end_of_week
+        )
 
 class InterviewsByMonthAPI(generics.ListAPIView):
     serializer_class = InterviewSerializer
 
     def get_queryset(self):
-        month = self.request.query_params.get('month')
-        year = self.request.query_params.get('year')
-        return Interview.objects.filter(date__month=month, date__year=year)
+        today = timezone.now().date()
+        start_of_month = today.replace(day=1)  # First day of the current month
+        # Calculate the last day of the month
+        next_month = start_of_month + datetime.timedelta(days=31)
+        start_of_next_month = next_month.replace(day=1)
+        end_of_month = start_of_next_month - datetime.timedelta(days=1)  # Last day of the current month
+
+        return Interview.objects.filter(
+            date__gte=start_of_month,
+            date__lte=end_of_month
+        )
     
 class GetRolesView(generics.ListAPIView):
     serializer_class = RoleSerializer
