@@ -97,3 +97,19 @@ class GetRolesView(generics.ListAPIView):
             "roles": serializer.data,
             "message": "Roles retrieved successfully"
         }, status=status.HTTP_200_OK)
+    
+class InterviewsByDepartmentAPI(generics.ListAPIView):
+    serializer_class = InterviewSerializer
+
+    def get_queryset(self):
+        department = self.request.query_params.get('department')
+        if department:
+            return Interview.objects.filter(department=department)
+        return Interview.objects.all()
+    
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response({
+            "interviews": serializer.data,
+        }, status=status.HTTP_200_OK)
