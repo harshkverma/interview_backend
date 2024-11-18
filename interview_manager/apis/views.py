@@ -91,18 +91,73 @@ class InterviewsByMonthAPI(generics.ListAPIView):
     serializer_class = InterviewSerializer
 
     def get_queryset(self):
-        today = timezone.now().date()
-        start_of_month = today.replace(day=1)  # First day of the current month
-        # Calculate the last day of the month
-        next_month = start_of_month + datetime.timedelta(days=31)
-        start_of_next_month = next_month.replace(day=1)
-        end_of_month = start_of_next_month - datetime.timedelta(days=1)  # Last day of the current month
+        month = self.request.query_params.get('month')
+        year = self.request.query_params.get('year')
 
-        return Interview.objects.filter(
-            date__gte=start_of_month,
-            date__lte=end_of_month
-        )
-    
+        # If month and year are provided in the query parameters, filter based on them
+        if month and year:
+            try:
+                month = int(month)
+                year = int(year)
+
+                # Check if the month and year are valid
+                if month < 1 or month > 12:
+                    return Response({
+                        "error": "Month must be between 1 and 12."
+                    }, status=status.HTTP_400_BAD_REQUEST)
+
+                # Calculate the start and end dates of the month
+                start_date = datetime.date(year, month, 1)
+                if month == 12:
+                    end_date = datetime.date(year + 1, 1, 1)  # January of the next year
+                else:
+                    end_date = datetime.date(year, month + 1, 1)  # First day of the next month
+
+                # Filter interviews based on the calculated range
+                return Interview.objects.filter(date__range=[start_date, end_date])
+
+            except ValueError:
+                return Response({
+                    "error": "Invalid year or month format. Both must be integers."
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+        # If no month and year are provided, default to the current month
+        else:
+            today = timezone.now().date()
+            start_of_month = today.replace(day=1)  # First day of the current month
+            # Calculate the last day of the current month
+            next_month = start_of_month + datetime.timedelta(days=31)
+            start_of_next_month = next_month.replace(day=1)
+            end_of_month = start_of_next_month - datetime.timedelta(days=1)  # Last day of the current month
+
+            # Return interviews for the current month
+            return Interview.objects.filter(
+                date__gte=start_of_month,
+                date__lte=end_of_month
+            )
+
+class InterviewsByDateRangeAPI(generics.ListAPIView):
+    serializer_class = InterviewSerializer
+
+    def get_queryset(self):
+        start_date = self.request.query_params.get('start_date')
+        end_date = self.request.query_params.get('end_date')
+
+        if start_date and end_date:
+            try:
+                # Convert to date objects
+                start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
+                end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
+
+                return Interview.objects.filter(date__range=[start_date, end_date])
+
+            except ValueError:
+                return Response({
+                    "error": "Invalid date format. Use YYYY-MM-DD."
+                }, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Interview.objects.none()
+
 class GetRolesView(generics.ListAPIView):
     serializer_class = RoleSerializer
 

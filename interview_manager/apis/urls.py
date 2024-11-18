@@ -12,6 +12,7 @@ urlpatterns = [
     path('api/interview/week/', InterviewsByWeekAPI.as_view(), name='interviews-by-week'),
     path('api/interview/work-week/', InterviewsByWorkWeekAPI.as_view(), name='interviews-by-work-week'),
     path('api/interview/month/', InterviewsByMonthAPI.as_view(), name='interviews-by-month'),
+    path('api/interview/date-range/', InterviewsByDateRangeAPI.as_view(), name='interviews-by-date-range'),
     path('api/roles/', GetRolesView.as_view(), name='get-roles'),
     path('api/interview/department/', InterviewsByDepartmentAPI.as_view(), name='interviews-by-department'),
     path('api/interview/<int:pk>/', GetUpdateDestroyInterviewAPI.as_view(), name='retrieve-update-destroy-interview'),
