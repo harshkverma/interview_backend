@@ -69,9 +69,30 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     
 class InterviewSerializer(serializers.ModelSerializer):
+    phone = serializers.CharField()
+
     class Meta:
         model = Interview
         fields = "__all__"
+
+    def to_internal_value(self, data):
+        phone = data.get('phone')
+
+        if isinstance(phone, int):
+            raise serializers.ValidationError({
+                "phone": "Phone number must be provided as a string, not an integer."
+            })
+
+        return super().to_internal_value(data)
+
+    def validate_phone(self, value):
+        if not value.isdigit():
+            raise serializers.ValidationError("Phone number must contain only numeric digits.")
+
+        if len(value) != 10:
+            raise serializers.ValidationError("Phone number must be exactly 10 digits.")
+
+        return value
     
 class RoleSerializer(serializers.ModelSerializer):
     class Meta:
