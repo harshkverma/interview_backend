@@ -228,7 +228,7 @@ def search_users(request):
         ).distinct()
 
         # Serialize the data
-        results = users.values('id', 'first_name', 'last_name', 'email', 'phone')
+        results = users.values('id', 'first_name', 'last_name', 'email')
         return Response({"users": list(results)}, status=status.HTTP_200_OK)
 
     return Response({"users": []}, status=status.HTTP_200_OK)
