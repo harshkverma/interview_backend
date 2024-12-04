@@ -2,10 +2,12 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework import status, generics
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import LoginSerializer, RegistrationSerializer, InterviewSerializer, RoleSerializer
 from .models import User, Interview, Roles
 from django.utils import timezone
+from django.db.models import Q
 import datetime
 
 class LoginUserView(APIView):
@@ -209,3 +211,24 @@ class GetUpdateDestroyInterviewAPI(generics.RetrieveUpdateDestroyAPIView):
             "message": "Interview updated successfully",
             "interview": serializer.data
         }, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def search_users(request):
+    """
+    API to search users based on query (name, email, or phone).
+    """
+    query = request.query_params.get('q', '').strip()
+    if query:
+        # Filter users by name, email, or phone
+        users = User.objects.filter(
+            Q(first_name__icontains=query) |
+            Q(last_name__icontains=query) |
+            Q(email__icontains=query) |
+            Q(phone__icontains=query)
+        ).distinct()
+
+        # Serialize the data
+        results = users.values('id', 'first_name', 'last_name', 'email', 'phone')
+        return Response({"users": list(results)}, status=status.HTTP_200_OK)
+
+    return Response({"users": []}, status=status.HTTP_200_OK)

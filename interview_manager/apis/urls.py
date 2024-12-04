@@ -16,4 +16,5 @@ urlpatterns = [
     path('api/roles/', GetRolesView.as_view(), name='get-roles'),
     path('api/interview/department/', InterviewsByDepartmentAPI.as_view(), name='interviews-by-department'),
     path('api/interview/<int:pk>/', GetUpdateDestroyInterviewAPI.as_view(), name='retrieve-update-destroy-interview'),
+    path('api/users/search/', search_users, name='search_users'),
 ]
