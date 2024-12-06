@@ -53,7 +53,7 @@ class ScheduleInterviewAPI(generics.CreateAPIView):
     serializer_class = InterviewSerializer
 
 class AllInterviewsAPI(generics.ListAPIView):
-    queryset = Interview.objects.all()
+    queryset = Interview.objects.all().order_by('id')
     serializer_class = InterviewSerializer
 
 class InterviewsByDateAPI(generics.ListAPIView):
@@ -61,7 +61,7 @@ class InterviewsByDateAPI(generics.ListAPIView):
 
     def get_queryset(self):
         date = self.request.query_params.get('date')
-        return Interview.objects.filter(date=date)
+        return Interview.objects.filter(date=date).order_by('id')
 
 class InterviewsByWeekAPI(generics.ListAPIView):
     serializer_class = InterviewSerializer
@@ -74,7 +74,7 @@ class InterviewsByWeekAPI(generics.ListAPIView):
         return Interview.objects.filter(
             date__gte=start_of_week,
             date__lte=end_of_week
-        )
+        ).order_by('id')
 
 class InterviewsByWorkWeekAPI(generics.ListAPIView):
     serializer_class = InterviewSerializer
@@ -87,7 +87,7 @@ class InterviewsByWorkWeekAPI(generics.ListAPIView):
         return Interview.objects.filter(
             date__gte=start_of_week,
             date__lte=end_of_week
-        )
+        ).order_by('id')
 
 class InterviewsByMonthAPI(generics.ListAPIView):
     serializer_class = InterviewSerializer
@@ -116,7 +116,7 @@ class InterviewsByMonthAPI(generics.ListAPIView):
                     end_date = datetime.date(year, month + 1, 1)  # First day of the next month
 
                 # Filter interviews based on the calculated range
-                return Interview.objects.filter(date__range=[start_date, end_date])
+                return Interview.objects.filter(date__range=[start_date, end_date]).order_by('id')
 
             except ValueError:
                 return Response({
@@ -136,7 +136,7 @@ class InterviewsByMonthAPI(generics.ListAPIView):
             return Interview.objects.filter(
                 date__gte=start_of_month,
                 date__lte=end_of_month
-            )
+            ).order_by('id')
 
 class InterviewsByDateRangeAPI(generics.ListAPIView):
     serializer_class = InterviewSerializer
@@ -151,7 +151,7 @@ class InterviewsByDateRangeAPI(generics.ListAPIView):
                 start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
                 end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
 
-                return Interview.objects.filter(date__range=[start_date, end_date])
+                return Interview.objects.filter(date__range=[start_date, end_date]).order_by('id')
 
             except ValueError:
                 return Response({
@@ -181,7 +181,7 @@ class InterviewsByDepartmentAPI(generics.ListAPIView):
         department = self.request.query_params.get('department')
         if department:
             return Interview.objects.filter(department=department)
-        return Interview.objects.all()
+        return Interview.objects.all().order_by('id')
     
     def get(self, request, *args, **kwargs):
         queryset = self.get_queryset()

@@ -2,6 +2,8 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 from .models import User, Interview, Roles
+from django.core.validators import EmailValidator
+from django.core.exceptions import ValidationError
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -92,6 +94,14 @@ class InterviewSerializer(serializers.ModelSerializer):
         if len(value) != 10:
             raise serializers.ValidationError("Phone number must be exactly 10 digits.")
 
+        return value
+
+    def validate_email(self, value):
+        email_validator = EmailValidator()
+        try:
+            email_validator(value)  # Validate email
+        except ValidationError:
+            raise serializers.ValidationError("Enter a valid email address.")
         return value
     
 class RoleSerializer(serializers.ModelSerializer):
